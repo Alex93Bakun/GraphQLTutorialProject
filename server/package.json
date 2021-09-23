@@ -1,0 +1,7 @@
+{
+  "name": "graphql-tutorial-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "BakunAlexander",
+  "license": "MIT"
+}
