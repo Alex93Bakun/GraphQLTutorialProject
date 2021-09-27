@@ -16,30 +16,30 @@ import CreateIcon from '@material-ui/icons/Create';
 import MoviesDialog from '../MoviesDialog/MoviesDialog';
 
 import withHocs from './MoviesTableHoc';
-
-const movies = [
-    {
-        id: 1,
-        name: 'Pulp Fiction',
-        genre: 'Crime',
-        rate: 10,
-        director: { name: 'Quentin Tarantino' },
-        watched: true,
-    },
-    {
-        id: 2,
-        name: 'Lock, Stock and Two Smoking Barrels',
-        genre: 'Crime-comedy',
-        rate: 9,
-        director: { name: 'Guy Ritchie' },
-        watched: false,
-    },
-];
+import MoviesSearch from '../MoviesSearch/MoviesSearch';
 
 class MoviesTable extends React.Component {
     state = {
         anchorEl: null,
         openDialog: false,
+        name: '',
+    };
+
+    handleChange = (name) => (event) => {
+        this.setState({ [name]: event.target.value });
+    };
+
+    handleSearch = (e) => {
+        const { data } = this.props;
+        const { name } = this.state;
+
+        if (e.charCode === 13) {
+            data.fetchMore({
+                variables: { name },
+                updateQuery: (previousResult, { fetchMoreResult }) =>
+                    fetchMoreResult,
+            });
+        }
     };
 
     handleDialogOpen = () => {
@@ -71,14 +71,24 @@ class MoviesTable extends React.Component {
     };
 
     render() {
-        const { anchorEl, openDialog, data: activeElem = {} } = this.state;
-
+        const {
+            anchorEl,
+            openDialog,
+            data: activeElem = {},
+            name,
+        } = this.state;
         const { classes, data = {} } = this.props;
-
         const { movies = [] } = data;
 
         return (
             <>
+                <Paper className={classes.searchRoot}>
+                    <MoviesSearch
+                        name={name}
+                        handleChange={this.handleChange}
+                        handleSearch={this.handleSearch}
+                    />
+                </Paper>
                 <MoviesDialog
                     open={openDialog}
                     handleClose={this.handleDialogClose}
@@ -93,7 +103,7 @@ class MoviesTable extends React.Component {
                                 <TableCell align="right">Rate</TableCell>
                                 <TableCell>Director</TableCell>
                                 <TableCell>Watched</TableCell>
-                                <TableCell align="right"></TableCell>
+                                <TableCell align="right" />
                             </TableRow>
                         </TableHead>
                         <TableBody>
